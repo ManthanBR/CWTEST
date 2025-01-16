@@ -258,599 +258,720 @@
 
   </body>
 
-    <script>
-      // Disable double-tap to zoom
-      document.addEventListener('touchstart', function (event) {
-        if (event.touches.length > 1) {
-          event.preventDefault();
-        }
-      }, { passive: false });
-
-      // Disable pinch to zoom
-      document.addEventListener('gesturestart', function (event) {
+  <script>
+    // Disable double-tap to zoom
+    document.addEventListener('touchstart', function (event) {
+      if (event.touches.length > 1) {
         event.preventDefault();
-      });
+      }
+    }, { passive: false });
 
-      var initialize = async() =>{
-        var unityCanvas = document.querySelector("#unity-canvas");
-        var videoCanvas = document.querySelector("#video-canvas");
-        window.arCamera = new ARCamera(unityCanvas, videoCanvas);
-        window.wTracker = new WorldTracker(arCamera);
-        try{
-            await window.wTracker.initialize("./opencv.js");
-            console.log("World tracker initialized!");
-        }
-        catch{
-            console.error("Failed to initialize world tracker. Are you missing opencv.js? " + error);
-            ShowError("Failed to initialize the World Tracker.");
-            return;
-        }
+    // Disable pinch to zoom
+    document.addEventListener('gesturestart', function (event) {
+      event.preventDefault();
+    });
 
-        await LoadWebcams();
-        document.getElementById("startARButton").style.visibility = "visible";
-
-        window.camPermissionsGranted = await IsCameraPermissionGranted();
-        window.motionPermissionsGranted = await IsMotionSensorPermissionGranted();
+    var initialize = async() =>{
+      var unityCanvas = document.querySelector("#unity-canvas");
+      var videoCanvas = document.querySelector("#video-canvas");
+      window.arCamera = new ARCamera(unityCanvas, videoCanvas);
+      window.wTracker = new WorldTracker(arCamera);
+      try{
+          await window.wTracker.initialize("./opencv.js");
+          console.log("World tracker initialized!");
+      }
+      catch{
+          console.error("Failed to initialize world tracker. Are you missing opencv.js? " + error);
+          ShowError("Failed to initialize the World Tracker.");
+          return;
       }
 
-      initialize();
+      await LoadWebcams();
+      document.getElementById("startARButton").style.visibility = "visible";
 
-      window.addEventListener("load", function () {
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js");
-        }
-      });
+      window.camPermissionsGranted = await IsCameraPermissionGranted();
+      window.motionPermissionsGranted = await IsMotionSensorPermissionGranted();
+    }
 
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var warningBanner = document.querySelector("#unity-warning");
+    initialize();
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
+    window.addEventListener("load", function () {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("ServiceWorker.js");
       }
-      let unityInstanceLoaded = false;
-         let unityInstance; // Define unityInstance here
-      function StartAR() {
-        if(window.arStarted) return;
+    });
 
-        window.arStarted = true;
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var warningBanner = document.querySelector("#unity-warning");
 
-        var startARDiv = document.querySelector("#startARDiv");
-        var startARButton = document.getElementById("startARButton");
-        var chooseCamSel = document.getElementById("chooseCamSel");
-
-        // Disable the button and dropdown
-        startARButton.disabled = true;
-        chooseCamSel.disabled = true;
-
-        startARDiv.style.opacity = 0;
-        setTimeout(()=>{
-          startARDiv.style.visibility = "hidden";
-        }, 500);
-
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/CWTEST.loader.js";
-        var config = {
-          dataUrl: buildUrl + "/CWTEST.data",
-          frameworkUrl: buildUrl + "/CWTEST.framework.js",
-          codeUrl: buildUrl + "/CWTEST.wasm",
-          streamingAssetsUrl: "StreamingAssets",
-          companyName: "DefaultCompany",
-          productName: "Chinesewok",
-          productVersion: "0.1",
-          showBanner: unityShowBanner,
-        };
-
-        // By default Unity keeps WebGL canvas render target size matched with
-        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-        // Set this to false if you want to decouple this synchronization from
-        // happening inside the engine, and you would instead like to size up
-        // the canvas DOM size and WebGL render target sizes yourself.
-        // config.matchWebGLToCanvasSize = false;
-
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          // Mobile device style: fill the whole browser client area with the game canvas:
-          var meta = document.createElement('meta');
-          meta.name = 'viewport';
-          meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-          document.getElementsByTagName('head')[0].appendChild(meta);
-        }
-
-        loadingBar.style.display = "block";
-
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-          createUnityInstance(canvas, config, (progress) => {
-            progressBarFull.style.width = 100 * progress + "%";
-          }).then((unityInstance) => {
-            loadingBar.style.display = "none";
-            unityInstanceLoaded = true;
-            window.unityInstance = unityInstance;
-            if(!window.camPermissionsGranted) {
-              RequestWebcam();
-            }
-            const recordButton = document.getElementById('recordButton');
-              recordButton.classList.add('ready');
-               onUnityLoaded();
-
-          }).catch((message) => {
-            alert(message);
-          });
-          // if(!window.motionPermissionsGranted){
-            StartMotionSensors();
-          // }
-            
-          //Call Start GPS here --> StartGPS();
-
-        };
-        document.body.appendChild(script);
+    // Shows a temporary message banner/ribbon for a few seconds, or
+    // a permanent error message on top of the canvas if type=='error'.
+    // If type=='warning', a yellow highlight color is used.
+    // Modify or remove this function to customize the visually presented
+    // way that non-critical warnings and error messages are presented to the
+    // user.
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
       }
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function() {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+      updateBannerVisibility();
+    }
+    let unityInstanceLoaded = false;
+       let unityInstance; // Define unityInstance here
+    function StartAR() {
+      if(window.arStarted) return;
 
-      function onUnityLoaded(){
-          console.log("Unity Loaded")
-           //You may set your audio capture here
-        }
-      //Set Facing Mode here ('environment', 'user', '')
-		window.unityFacingMode = "environment"
+      window.arStarted = true;
 
-      window.WEBCAM_SETTINGS = {
-          video: {
-              facingMode: unityFacingMode,
-          },
-          audio: false
+      var startARDiv = document.querySelector("#startARDiv");
+      var startARButton = document.getElementById("startARButton");
+      var chooseCamSel = document.getElementById("chooseCamSel");
+
+      // Disable the button and dropdown
+      startARButton.disabled = true;
+      chooseCamSel.disabled = true;
+
+      startARDiv.style.opacity = 0;
+      setTimeout(()=>{
+        startARDiv.style.visibility = "hidden";
+      }, 500);
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/CWTEST.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/CWTEST.data",
+        frameworkUrl: buildUrl + "/CWTEST.framework.js",
+        codeUrl: buildUrl + "/CWTEST.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "Chinesewok",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
       };
 
-      window.requestingForPermissions = false;
-      async function RequestWebcam(){
-          window.requestingForPermissions = true;
-          try{
-              window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
-              console.log("Webcam access granted");
-              requestingForPermissions = false;
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
 
-              // Immediately stop the stream to release the camera
-              StopWebcam();
-          }
-          catch (err) {
-              //user denied camera permission - show error panel
-              console.error("getUserMedia error - " , err);
-              ShowError("Failed to start the experience. Camera permission was denied");
-              window.requestingForPermissions = false;
-          }           
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
-      function StopWebcam(){
-          console.log("stopping camera");
-          window.webcamStream.getTracks().forEach(track => track.stop());    
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          unityInstanceLoaded = true;
+          window.unityInstance = unityInstance;
+          if(!window.camPermissionsGranted) {
+            RequestWebcam();
+          }
+          const recordButton = document.getElementById('recordButton');
+            recordButton.classList.add('ready');
+             onUnityLoaded();
+
+        }).catch((message) => {
+          alert(message);
+        });
+        // if(!window.motionPermissionsGranted){
+          StartMotionSensors();
+        // }
+          
+        //Call Start GPS here --> StartGPS();
+
+      };
+      document.body.appendChild(script);
+    }
+
+    function onUnityLoaded(){
+        console.log("Unity Loaded")
+         //You may set your audio capture here
       }
+    //Set Facing Mode here ('environment', 'user', '')
+  window.unityFacingMode = "environment"
 
-      async function StartWebcam(){
-          console.log("StartWebcam")
+    window.WEBCAM_SETTINGS = {
+        video: {
+            facingMode: unityFacingMode,
+        },
+        audio: false
+    };
 
-          window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
+    window.requestingForPermissions = false;
+    async function RequestWebcam(){
+        window.requestingForPermissions = true;
+        try{
+            window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
+            console.log("Webcam access granted");
+            requestingForPermissions = false;
 
-          while (window.requestingForPermissions) {
-              // Wait until requestingForPermissions becomes true.
-              console.log("Waiting for permissions...");
-              await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay time as needed.
-          }
+            // Immediately stop the stream to release the camera
+            StopWebcam();
+        }
+        catch (err) {
+            //user denied camera permission - show error panel
+            console.error("getUserMedia error - " , err);
+            ShowError("Failed to start the experience. Camera permission was denied");
+            window.requestingForPermissions = false;
+        }           
+    }
 
-          console.log("Got Permissions");
+    function StopWebcam(){
+        console.log("stopping camera");
+        window.webcamStream.getTracks().forEach(track => track.stop());    
+    }
 
-          if(window.webcamStream)
-          {
-              const video = document.querySelector("#webcam-video");
-              video.srcObject = webcamStream;
-              try {
-                  await arCamera.startWebcam(video);
-                  console.log("Webcam started successfully");
+    async function StartWebcam(){
+        console.log("StartWebcam")
 
-                  window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
+        window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
 
-                 
+        while (window.requestingForPermissions) {
+            // Wait until requestingForPermissions becomes true.
+            console.log("Waiting for permissions...");
+            await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay time as needed.
+        }
 
-                  //replace background transparency
-                  const canvas = document.querySelector("#unity-canvas");
-                  let bgColor = window.getComputedStyle(canvas).backgroundColor;
-                  canvas.style.background = bgColor.replace("rgb", "rgba").replace(")", ", 0)");
-                  
-              }
-              catch(err){
-                  console.error("Webcam failed to start - ", err);
-                  window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamFail');
-              }   
-          }
-          else{
-              console.error("Webcam failed to start - permission not yet granted");
-              window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamFail');
-          }  
-      }
+        console.log("Got Permissions");
 
-      async function LoadWebcams(){
-          let camDevices = [];
-          // let backCams = [];
-          let devices = await navigator.mediaDevices.enumerateDevices();
-          var ctr = 0;
-          devices.forEach(mediaDevice => {
-              if (mediaDevice.kind === 'videoinput') {
+        if(window.webcamStream)
+        {
+            const video = document.querySelector("#webcam-video");
+            video.srcObject = webcamStream;
+            try {
+                await arCamera.startWebcam(video);
+                console.log("Webcam started successfully");
 
-                  if(window.unityFacingMode == 'environment' && !mediaDevice.label.includes('facing front')){
-                      //back cam only
-                      camDevices.push(mediaDevice);
-                  }
-                  else if(window.unityFacingMode == 'user' && mediaDevice.label.includes('facing front')){
-                      //front cam only
-                      camDevices.push(mediaDevice);
-                  }
-                  else{
-                      //back and front
-                      camDevices.push(mediaDevice);
-                  }   
-                  
-                  ctr++;
-              }
-          });
-          var select = document.getElementById("chooseCamSel");
-          select.style.visibility = "visible";
-          var count = 0;
-          //reverse array because some Android phones can't distinguish front and back cams at first load
-          //and when this happens, most of the time, front cam goes first and back cam goes last
-          camDevices = camDevices.reverse();
-          camDevices.forEach(mediaDevice => {
-              const option = document.createElement('option');
-              option.value = mediaDevice.deviceId;
-              let label = `Camera ${count}`;
-              if (mediaDevice.label) {
-                  label = mediaDevice.label
-              }
-              const textNode = document.createTextNode(label);
-              option.appendChild(textNode);
-              select.appendChild(option);
-              count++;
-          });
-          wTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
-          SelectCam();
-      }
-      function SelectCam(){
-          var select = document.getElementById("chooseCamSel");
-          window.deviceId = select.value;
-          window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
-          //console.log(window.WEBCAM_SETTINGS);
-          wTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
+                window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
 
-          console.log("selecting camera index [" + select.selectedIndex + "] -> " + wTracker.WEBCAM_NAME);
+               
 
-      }
+                //replace background transparency
+                const canvas = document.querySelector("#unity-canvas");
+                let bgColor = window.getComputedStyle(canvas).backgroundColor;
+                canvas.style.background = bgColor.replace("rgb", "rgba").replace(")", ", 0)");
+                
+            }
+            catch(err){
+                console.error("Webcam failed to start - ", err);
+                window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamFail');
+            }   
+        }
+        else{
+            console.error("Webcam failed to start - permission not yet granted");
+            window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamFail');
+        }  
+    }
 
-      async function FlipCam(){
-          arCamera.stopWebcam();
-          window.WEBCAM_SETTINGS.video.deviceId = '';
+    async function LoadWebcams(){
+        let camDevices = [];
+        // let backCams = [];
+        let devices = await navigator.mediaDevices.enumerateDevices();
+        var ctr = 0;
+        devices.forEach(mediaDevice => {
+            if (mediaDevice.kind === 'videoinput') {
 
-          if(window.WEBCAM_SETTINGS.video.facingMode == 'user'){
-              window.WEBCAM_SETTINGS.video.facingMode = 'environment';
-              arCamera.setFlipped(false);
-          }
-          else{
-              window.WEBCAM_SETTINGS.video.facingMode = 'user';
-              arCamera.setFlipped(true);
-          }
-          window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
+                if(window.unityFacingMode == 'environment' && !mediaDevice.label.includes('facing front')){
+                    //back cam only
+                    camDevices.push(mediaDevice);
+                }
+                else if(window.unityFacingMode == 'user' && mediaDevice.label.includes('facing front')){
+                    //front cam only
+                    camDevices.push(mediaDevice);
+                }
+                else{
+                    //back and front
+                    camDevices.push(mediaDevice);
+                }   
+                
+                ctr++;
+            }
+        });
+        var select = document.getElementById("chooseCamSel");
+        select.style.visibility = "visible";
+        var count = 0;
+        //reverse array because some Android phones can't distinguish front and back cams at first load
+        //and when this happens, most of the time, front cam goes first and back cam goes last
+        camDevices = camDevices.reverse();
+        camDevices.forEach(mediaDevice => {
+            const option = document.createElement('option');
+            option.value = mediaDevice.deviceId;
+            let label = `Camera ${count}`;
+            if (mediaDevice.label) {
+                label = mediaDevice.label
+            }
+            const textNode = document.createTextNode(label);
+            option.appendChild(textNode);
+            select.appendChild(option);
+            count++;
+        });
+        wTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
+        SelectCam();
+    }
+    function SelectCam(){
+        var select = document.getElementById("chooseCamSel");
+        window.deviceId = select.value;
+        window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
+        //console.log(window.WEBCAM_SETTINGS);
+        wTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
 
-          const video = document.querySelector("#webcam-video");
-          video.srcObject = webcamStream;
+        console.log("selecting camera index [" + select.selectedIndex + "] -> " + wTracker.WEBCAM_NAME);
 
-          await arCamera.startWebcam(video);
-      }
+    }
 
-      async function IsCameraPermissionGranted() {
-          if (!navigator.permissions || !navigator.mediaDevices) {
-              console.log("Permissions API or mediaDevices not supported.");
-              return false;
-          }
+    async function FlipCam(){
+        arCamera.stopWebcam();
+        window.WEBCAM_SETTINGS.video.deviceId = '';
 
-          try {
-              // Query the status of the camera permission
-              const permissionStatus = await navigator.permissions.query({ name: "camera" });
-              if (permissionStatus.state === "granted") {
-              console.log("Camera permission has already been granted.");
-              return true;
-              } else if (permissionStatus.state === "prompt") {
-              console.log("Camera permission is promptable.");
-              return false;
-              } else {
-              console.log("Camera permission has been denied.");
-              return false;
-              }
-          } catch (error) {
-              console.log("Error checking camera permission:", error);
-              return false;
-          }
-      }
+        if(window.WEBCAM_SETTINGS.video.facingMode == 'user'){
+            window.WEBCAM_SETTINGS.video.facingMode = 'environment';
+            arCamera.setFlipped(false);
+        }
+        else{
+            window.WEBCAM_SETTINGS.video.facingMode = 'user';
+            arCamera.setFlipped(true);
+        }
+        window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
 
-      async function IsMotionSensorPermissionGranted() {
-          if (!navigator.permissions) {
-              console.log("Permissions API not supported.");
-              return false;
-          }
+        const video = document.querySelector("#webcam-video");
+        video.srcObject = webcamStream;
 
-          try {
-              // Query the status of the accelerometer permission
-              const permissionStatus = await navigator.permissions.query({ name: "accelerometer" });
-              if (permissionStatus.state === "granted") {
-                  console.log("Motion sensor permission has already been granted.");
-                  return true;
-              } else if (permissionStatus.state === "prompt") {
-                  console.log("Motion sensor permission is promptable.");
-                  return false;
-              } else {
-                  console.log("Motion sensor permission has been denied.");
-                  return false;
-              }
-          } catch (error) {
-              console.log("Error checking motion sensor permission:", error);
-              return false;
-          }
-      }
+        await arCamera.startWebcam(video);
+    }
 
-      async function IsGPSPermissionGranted() {
+    async function IsCameraPermissionGranted() {
+        if (!navigator.permissions || !navigator.mediaDevices) {
+            console.log("Permissions API or mediaDevices not supported.");
+            return false;
+        }
+
+        try {
+            // Query the status of the camera permission
+            const permissionStatus = await navigator.permissions.query({ name: "camera" });
+            if (permissionStatus.state === "granted") {
+            console.log("Camera permission has already been granted.");
+            return true;
+            } else if (permissionStatus.state === "prompt") {
+            console.log("Camera permission is promptable.");
+            return false;
+            } else {
+            console.log("Camera permission has been denied.");
+            return false;
+            }
+        } catch (error) {
+            console.log("Error checking camera permission:", error);
+            return false;
+        }
+    }
+
+    async function IsMotionSensorPermissionGranted() {
         if (!navigator.permissions) {
             console.log("Permissions API not supported.");
             return false;
         }
 
         try {
-            // Query the status of the geolocation permission
-            const permissionStatus = await navigator.permissions.query({ name: "geolocation" });
+            // Query the status of the accelerometer permission
+            const permissionStatus = await navigator.permissions.query({ name: "accelerometer" });
             if (permissionStatus.state === "granted") {
-                console.log("GPS permission has already been granted.");
+                console.log("Motion sensor permission has already been granted.");
                 return true;
             } else if (permissionStatus.state === "prompt") {
-                console.log("GPS permission is promptable.");
+                console.log("Motion sensor permission is promptable.");
                 return false;
             } else {
-                console.log("GPS permission has been denied.");
+                console.log("Motion sensor permission has been denied.");
                 return false;
             }
         } catch (error) {
-            console.log("Error checking GPS permission:", error);
+            console.log("Error checking motion sensor permission:", error);
             return false;
         }
+    }
+
+    async function IsGPSPermissionGranted() {
+      if (!navigator.permissions) {
+          console.log("Permissions API not supported.");
+          return false;
       }
 
-      function StartMotionSensors(){
-            window.wTracker.startAngles()
-            .then(()=>{
-                console.log("Motion sensors started");
-            })
-            .catch(error=>{
-                console.error("Failed to start motion sensors - " + error);
-                ShowError("Failed to start the experience. " + error);
-
-            });
-        }
-
-        function StartGPS(){            
-            window.wTracker.startGPS()
-            .then((pos)=>{
-                console.log("GPS started", pos);
-            })
-            .catch(error=>{
-                console.error("Failed to start GPS - " + error);
-                //ShowError("Failed to start GPS " + error);
-            });
-        }
-
-      function ShowError(error){
-          var errorDiv = document.getElementById("errorDiv");
-          errorDiv.style.opacity = 1;
-          errorDiv.style.visibility = "visible";
-          document.getElementById("errorText").innerHTML = error;
-      }
-
-      function ShowScreenshot(dataUrl){
-          var screenshotDiv = document.getElementById("screenshotDiv");
-          screenshotDiv.style.opacity = 1;
-          screenshotDiv.style.visibility = "visible";
-
-          document.getElementById("screenshotImg").src = dataUrl;
-          document.getElementById("screenshotImg").style.width = "80vw";
-          document.getElementById("screenshotImg").style.height = 80 / window.innerWidth * window.innerHeight + "vw";
-      }
-
-      function HideScreenshot(){
-          var screenshotDiv = document.getElementById('screenshotDiv');
-          screenshotDiv.style.opacity = 0;
-          setTimeout(()=>{
-            screenshotDiv.style.visibility = 'hidden';
-          }, 500);
-      }
-
-      function ShowConfirmUrl(url){
-          var confirmUrlDiv = document.getElementById("confirmUrlDiv");
-          confirmUrlDiv.style.opacity = 1;
-          confirmUrlDiv.style.visibility = "visible";
-          window.newUrlString = url;
-          document.getElementById("confirmUrlText").innerText = "Are you sure you want to visit " + url + "?";                
-      }
-
-      function HideConfirmUrl(){
-          var confirmUrlDiv = document.getElementById("confirmUrlDiv");
-          confirmUrlDiv.style.opacity = 0;
-          setTimeout(()=>{
-            confirmUrlDiv.style.visibility = 'hidden';
-          }, 500);
-      }
-// Recording Logic (integrated)
-      let mediaRecorder;
-        let recordedBlobs = [];
-        let stream;
-        let isRecording = false;
-        let recordingTimeout;
-        let videoURL;
-        let combinedCanvas;
-        let combinedCtx;
-
-        async function startRecording(unityCanvas, videoCanvas) {
-            isRecording = true;
-            const recordButton = document.getElementById('recordButton');
-            recordButton.classList.add('recording');
-             let audioStream;
-
-            try {
-                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            } catch (error) {
-                console.error("Error accessing microphone:", error);
-            }
-
-           combinedCanvas = document.createElement('canvas');
-           combinedCanvas.width = unityCanvas.width;
-           combinedCanvas.height = unityCanvas.height;
-           combinedCtx = combinedCanvas.getContext('2d');
-
-             let frameRate = 60;
-              stream = combinedCanvas.captureStream(frameRate);
-             if (audioStream) {
-                stream = new MediaStream([...stream.getTracks(), ...audioStream.getTracks()]);
-            }
-             mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-
-            mediaRecorder.ondataavailable = event => {
-                 if (event.data && event.data.size > 0) {
-                    recordedBlobs.push(event.data);
-                }
-           };
-           mediaRecorder.start();
-
-           function drawCombined(){
-              if(!isRecording){
-                   return
-                }
-                 combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height)
-                 combinedCtx.drawImage(videoCanvas, 0, 0, combinedCanvas.width, combinedCanvas.height)
-                 combinedCtx.drawImage(unityCanvas, 0, 0, combinedCanvas.width, combinedCanvas.height)
-                  requestAnimationFrame(drawCombined);
-              }
-              drawCombined();
-            recordingTimeout = setTimeout(stopRecordingAndShowPopup, 60000);
-        }
-
-        async function stopRecordingAndShowPopup() {
-           clearTimeout(recordingTimeout);
-            videoURL = await stopRecording();
-            showRecordingPopup();
-        }
-
-
-        function stopRecording() {
-            isRecording = false;
-           return new Promise(resolve => {
-              mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedBlobs, { type: 'video/webm' });
-                  videoURL = URL.createObjectURL(blob);
-                  resolve(videoURL);
-                    recordedBlobs = [];
-                    const recordButton = document.getElementById('recordButton');
-                    recordButton.classList.remove('recording');
-                };
-                mediaRecorder.stop();
-           });
-        }
-
-
-        function showRecordingPopup() {
-            const popup = document.getElementById('recordingPopup');
-            const videoElement = document.getElementById('recordedVideo');
-             if(videoURL) {
-                  videoElement.src = videoURL;
-                popup.style.display = "flex";
-               videoElement.play().catch(error => {
-               console.error("Video Playback error: ", error);
-                });
+      try {
+          // Query the status of the geolocation permission
+          const permissionStatus = await navigator.permissions.query({ name: "geolocation" });
+          if (permissionStatus.state === "granted") {
+              console.log("GPS permission has already been granted.");
+              return true;
+          } else if (permissionStatus.state === "prompt") {
+              console.log("GPS permission is promptable.");
+              return false;
+          } else {
+              console.log("GPS permission has been denied.");
+              return false;
           }
-            else{
-               console.error("Video Url not available")
-            }
-         }
-        function hideRecordingPopup() {
-            const popup = document.getElementById('recordingPopup');
-            const videoElement = document.getElementById('recordedVideo');
-            videoElement.pause();
-           videoElement.src = "";
-            popup.style.display = "none";
-        }
+      } catch (error) {
+          console.log("Error checking GPS permission:", error);
+          return false;
+      }
+    }
 
-        function downloadVideo(videoURL) {
-          const a = document.createElement('a');
-             a.href = videoURL;
-             a.download = 'gameplay_recording.webm';
-             document.body.appendChild(a);
-             a.click();
-             document.body.removeChild(a);
-             URL.revokeObjectURL(videoURL);
-         }
+    function StartMotionSensors(){
+          window.wTracker.startAngles()
+          .then(()=>{
+              console.log("Motion sensors started");
+          })
+          .catch(error=>{
+              console.error("Failed to start motion sensors - " + error);
+              ShowError("Failed to start the experience. " + error);
+
+          });
+      }
+
+      function StartGPS(){            
+          window.wTracker.startGPS()
+          .then((pos)=>{
+              console.log("GPS started", pos);
+          })
+          .catch(error=>{
+              console.error("Failed to start GPS - " + error);
+              //ShowError("Failed to start GPS " + error);
+          });
+      }
+
+    function ShowError(error){
+        var errorDiv = document.getElementById("errorDiv");
+        errorDiv.style.opacity = 1;
+        errorDiv.style.visibility = "visible";
+        document.getElementById("errorText").innerHTML = error;
+    }
+
+    function ShowScreenshot(dataUrl){
+        var screenshotDiv = document.getElementById("screenshotDiv");
+        screenshotDiv.style.opacity = 1;
+        screenshotDiv.style.visibility = "visible";
+
+        document.getElementById("screenshotImg").src = dataUrl;
+        document.getElementById("screenshotImg").style.width = "80vw";
+        document.getElementById("screenshotImg").style.height = 80 / window.innerWidth * window.innerHeight + "vw";
+    }
+
+    function HideScreenshot(){
+        var screenshotDiv = document.getElementById('screenshotDiv');
+        screenshotDiv.style.opacity = 0;
+        setTimeout(()=>{
+          screenshotDiv.style.visibility = 'hidden';
+        }, 500);
+    }
+
+    function ShowConfirmUrl(url){
+        var confirmUrlDiv = document.getElementById("confirmUrlDiv");
+        confirmUrlDiv.style.opacity = 1;
+        confirmUrlDiv.style.visibility = "visible";
+        window.newUrlString = url;
+        document.getElementById("confirmUrlText").innerText = "Are you sure you want to visit " + url + "?";                
+    }
+
+    function HideConfirmUrl(){
+        var confirmUrlDiv = document.getElementById("confirmUrlDiv");
+        confirmUrlDiv.style.opacity = 0;
+        setTimeout(()=>{
+          confirmUrlDiv.style.visibility = 'hidden';
+        }, 500);
+    }
+// Recording Logic (integrated)
+    let mediaRecorder;
+      let recordedBlobs = [];
+      let stream;
+      let isRecording = false;
+      let recordingTimeout;
+      let videoURL;
+      let combinedCanvas;
+      let combinedCtx;
+      let audioStream;
+
+      async function startRecording(unityCanvas, videoCanvas) {
+          isRecording = true;
+          const recordButton = document.getElementById('recordButton');
+          recordButton.classList.add('recording');
 
 
-       async function shareVideo(videoURL) {
-          if (navigator.share) {
-              try {
-                  const blob = await fetch(videoURL).then(res => res.blob())
-                    const file = new File([blob], 'gameplay_recording.webm', { type: 'video/webm' });
-                      await navigator.share({
-                        files: [file],
-                    });
-                    console.log('Video shared successfully');
-                } catch (error) {
-                    console.error('Error sharing video:', error);
-                   downloadVideo(videoURL);
-                }
+          try {
+              audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          } catch (error) {
+              console.error("Error accessing microphone:", error);
+          }
 
-           } else {
-                downloadVideo(videoURL);
+         combinedCanvas = document.createElement('canvas');
+         combinedCanvas.width = unityCanvas.width;
+         combinedCanvas.height = unityCanvas.height;
+         combinedCtx = combinedCanvas.getContext('2d');
+
+           let frameRate = 60;
+           const frameBlobs = [];
+
+              function drawCombinedAndSave() {
+                  if (!isRecording) {
+                      return;
+                  }
+
+                  combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+                  combinedCtx.drawImage(videoCanvas, 0, 0, combinedCanvas.width, combinedCanvas.height);
+                  combinedCtx.drawImage(unityCanvas, 0, 0, combinedCanvas.width, combinedCanvas.height);
+
+
+               combinedCanvas.toBlob(blob => {
+                    if(blob){
+                          frameBlobs.push(blob);
+                     }
+                     else{
+                         console.error("Error creating canvas blob");
+                          stopRecordingAndShowPopup();
+                     }
+
+                 }, 'image/jpeg', 0.95);
+                  requestAnimationFrame(drawCombinedAndSave);
+               }
+              drawCombinedAndSave();
+
+              let audioChunks = [];
+             if (audioStream) {
+                 const audioRecorder = new MediaRecorder(audioStream);
+                  audioRecorder.ondataavailable = e =>{
+                     audioChunks.push(e.data)
+                  }
+                  audioRecorder.start();
+                  window.stopAudio = () => {
+                      return new Promise(resolve => {
+                          audioRecorder.onstop = ()=>{
+                              resolve();
+                          }
+                           audioRecorder.stop();
+                       })
+                  }
              }
-        }
-        // Event listeners
-        document.addEventListener("DOMContentLoaded", () => {
-             const unityCanvas = document.querySelector("#unity-canvas");
-             const videoCanvas = document.querySelector("#video-canvas");
-             const recordButton = document.getElementById('recordButton');
-              const shareButton = document.getElementById('shareButton');
-           recordButton.addEventListener("click", async () => {
-              if(!isRecording){
-                await startRecording(unityCanvas, videoCanvas);
-                }
-                else {
-                   clearTimeout(recordingTimeout);
-                    await stopRecordingAndShowPopup();
-                }
-            });
-           shareButton.addEventListener('click', async ()=>{
-                await shareVideo(videoURL)
+
+          recordingTimeout = setTimeout(async () =>{
+               await stopRecordingAndShowPopup(frameBlobs, audioChunks);
+          }, 60000);
+
+      }
+
+    async function stopRecordingAndShowPopup(frameBlobs, audioChunks) {
+          clearTimeout(recordingTimeout);
+           videoURL = await stopRecording(frameBlobs, audioChunks);
+         showRecordingPopup();
+     }
+
+  async function stopRecording(frameBlobs, audioChunks) {
+          isRecording = false;
+           return new Promise(async (resolve) => {
+             let allBlobs = [];
+
+               if (frameBlobs && frameBlobs.length > 0){
+                   allBlobs.push(...frameBlobs)
+               }
+                try{
+                    if(audioChunks && audioChunks.length > 0) {
+                         await stopAudio();
+                         const audioBlob = new Blob(audioChunks, { type: "audio/webm" })
+                          allBlobs.push(audioBlob)
+                       }
+                    }
+                    catch(e){
+                       console.error("Error during audio processing:", e)
+                   }
+
+                const combinedBlob =  await combineBlobs(allBlobs, combinedCanvas.width, combinedCanvas.height);
+
+
+                 if (combinedBlob) {
+                  videoURL = URL.createObjectURL(combinedBlob);
+                 } else{
+                   console.error("Error creating combined blob");
+               }
+               resolve(videoURL)
+
+                   const recordButton = document.getElementById('recordButton');
+                   recordButton.classList.remove('recording');
+          });
+      }
+  async function combineBlobs(blobs, canvasWidth, canvasHeight)
+    {
+          if (!blobs || blobs.length === 0) {
+               console.error("No blobs to combine.");
+               return null;
+           }
+
+          if(blobs.length == 1 && blobs[0].type.startsWith('video'))
+          {
+            console.log("Single video blob")
+            return blobs[0];
+          }
+       return new Promise(async (resolve) => {
+      const videoEncoder = new VideoEncoder({
+          output: (chunk, meta) => {
+          console.log("Received encoded chunk:", chunk)
+                recordedBlobs.push(new Blob([chunk.data], { type: 'video/mp4' }));
+               },
+          error: e => {
+               console.error("Error Encoding Video", e);
+               resolve(null)
+              }
+        });
+
+
+            try{
+                videoEncoder.configure({
+                     codec: 'avc1.420034',  //H.264
+                     width: canvasWidth,
+                      height: canvasHeight,
+                     framerate: 60,
+                     bitrate: 10000000,
+                   });
+
+                  for(let i = 0; i < blobs.length; i++)
+                   {
+                        if (blobs[i].type.startsWith('image')) {
+                           let imageBitmap = await createImageBitmap(blobs[i])
+
+                          const frame = new VideoFrame(imageBitmap, {timestamp: i * (1000 / 60)});
+
+                          videoEncoder.encode(frame)
+                         frame.close();
+                        }
+                      else if (blobs[i].type.startsWith('audio')) {
+                        console.log("Audio blob added" + blobs[i])
+                              recordedBlobs.push(blobs[i])
+                         }
+                 }
+               videoEncoder.flush();
+              }
+              catch(e)
+              {
+                   console.error("Error encoding video: ", e);
+                   resolve(null);
+              }
+
+
+                await new Promise(res => setTimeout(res, 100));
+                 if (recordedBlobs.length > 0)
+                  {
+                        let videoBlob;
+                         if (recordedBlobs.length == 1 && recordedBlobs[0].type.startsWith('video'))
+                          {
+                            videoBlob = recordedBlobs[0]
+                           }
+                        else{
+                                videoBlob = new Blob(recordedBlobs, { type: 'video/mp4' });
+                         }
+
+
+                         resolve(videoBlob)
+                  }
+                  else
+                  {
+                        resolve(null)
+                         console.error("Error in video encoder")
+                    }
            });
-       });
-    
-    </script>
+  }
+
+      function showRecordingPopup() {
+          const popup = document.getElementById('recordingPopup');
+          const videoElement = document.getElementById('recordedVideo');
+           if(videoURL) {
+                videoElement.src = videoURL;
+              popup.style.display = "flex";
+             videoElement.play().catch(error => {
+             console.error("Video Playback error: ", error);
+              });
+        }
+          else{
+             console.error("Video Url not available")
+          }
+       }
+      function hideRecordingPopup() {
+          const popup = document.getElementById('recordingPopup');
+          const videoElement = document.getElementById('recordedVideo');
+          videoElement.pause();
+         videoElement.src = "";
+          popup.style.display = "none";
+      }
+
+      function downloadVideo(videoURL) {
+        const a = document.createElement('a');
+           a.href = videoURL;
+           a.download = 'gameplay_recording.mp4';
+           document.body.appendChild(a);
+           a.click();
+           document.body.removeChild(a);
+           URL.revokeObjectURL(videoURL);
+       }
+
+
+     async function shareVideo(videoURL) {
+        if (navigator.share) {
+            try {
+                const blob = await fetch(videoURL).then(res => res.blob())
+                  const file = new File([blob], 'gameplay_recording.mp4', { type: 'video/mp4' });
+                    await navigator.share({
+                      files: [file],
+                  });
+                  console.log('Video shared successfully');
+              } catch (error) {
+                  console.error('Error sharing video:', error);
+                 downloadVideo(videoURL);
+              }
+
+         } else {
+              downloadVideo(videoURL);
+           }
+      }
+      // Event listeners
+      document.addEventListener("DOMContentLoaded", () => {
+           const unityCanvas = document.querySelector("#unity-canvas");
+           const videoCanvas = document.querySelector("#video-canvas");
+           const recordButton = document.getElementById('recordButton');
+            const shareButton = document.getElementById('shareButton');
+         recordButton.addEventListener("click", async () => {
+            if(!isRecording){
+              await startRecording(unityCanvas, videoCanvas);
+              }
+              else {
+                clearTimeout(recordingTimeout);
+                  await stopRecordingAndShowPopup();
+              }
+          });
+         shareButton.addEventListener('click', async ()=>{
+              await shareVideo(videoURL)
+         });
+     });
+  
+  </script>
   </html>
 
