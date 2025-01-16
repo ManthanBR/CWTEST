@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-Chinesewok-0.1";
 const contentToCache = [
-    "Build/CWfinal.loader.js",
-    "Build/CWfinal.framework.js",
-    "Build/CWfinal.data",
-    "Build/CWfinal.wasm",
+    "Build/CWTEST.loader.js",
+    "Build/CWTEST.framework.js",
+    "Build/CWTEST.data",
+    "Build/CWTEST.wasm",
     "TemplateData/style.css"
 
 ];
