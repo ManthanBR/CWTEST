@@ -1,14 +1,111 @@
-/* Modernized Custom CSS for Zappar Save and Share UI */
-#ZapparSnapshotContainer {
+     /* Camera button Styling */
+     #cameraButtonContainer {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+    }
+   #cameraButtonContainer button {
+          padding: 20px;
+        border: none;
+       background-color: transparent;
+        border-radius: 0%;
+        cursor: pointer;
+        display:flex;
+       align-items:center;
+       justify-content:center;
+        transition: background-color 0.3s ease;
+       box-shadow: none; /* Remove the box-shadow*/
+   }
+    #cameraButtonContainer button:hover {
+        background-color: rgba(255, 0, 0, 0); /*Remove background hover*/
+     }
+    #cameraButtonContainer button svg{
+       fill: white;
+   }
+      /* Circle progress bar styling */
+    .progress-ring {
+         position: relative;
+       width: 80px;
+       height: 80px;
+    }
+
+    .progress-ring__circle {
+         transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      fill: transparent;
+     }
+   .progress-ring__track {
+         stroke: rgba(255, 255, 255, 0.3);
+      stroke-width: 5px;
+    }
+    .progress-ring__bar {
+       stroke: rgba(255, 0, 0, 0.603); /*Green Color for the progress bar*/
+       stroke-width: 5px;
+        stroke-linecap: round;
+         fill:transparent;
+       stroke-dasharray: 226; /* Set the stroke dash array to the circumference of the progress bar*/
+      stroke-dashoffset: 226;
+        transition: stroke-dashoffset 0.1s linear; /* animation of the offset*/
+    }
+      /* Camera icon and red dot */
+   .camera-icon {
+       position: absolute;
+       top: 50%;
+        left: 50%;
+         transform: translate(-50%, -50%);
+      display:flex;
+       align-items:center;
+       justify-content:center;
+
+    }
+
+    .camera-icon svg{
+         fill: white;
+         width: 30px;
+         height: 30px;
+    }
+
+    .red-dot {
+       width: 20px;
+       height: 20px;
+         background-color: red;
+         border-radius: 50%;
+         position: absolute;
+           display: none; /* hide by default */
+    }
+
+     #cameraButtonContainer button.recording .red-dot{
+        display:block;
+         animation: pulse 1s linear infinite; /* Apply animation */
+   }
+
+   @keyframes pulse {
+      0% {
+           transform: scale(1);
+        }
+    50% {
+          transform: scale(1.4); /* Scale up in the middle*/
+       }
+      100% {
+         transform: scale(1);
+       }
+   }
+  body { font-family: 'Roboto', sans-serif; letter-spacing: 0.05em; font-size: max(2vw, 2vh); color:white; overflow: hidden} /*Prevent scroll bars*/
+
+  #ZapparSnapshotContainer {
     background-color: rgba(0, 0, 0, 0.75) !important;
     color: white !important;
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important; /* Center items horizontally */
-    justify-content: center !important; /* Center items vertically */
-    font-family: 'Roboto', sans-serif !important; /* Modern font */
+    align-items: center !important;
+    /* Center items horizontally */
+    justify-content: center !important;
+    /* Center items vertically */
+    font-family: 'Roboto', sans-serif !important;
+    /* Modern font */
 }
-
 
 #zapparCloseAref {
     position: absolute !important;
@@ -23,61 +120,54 @@
     stroke: white !important;
 }
 
-
 #ZapparPreviewVideo {
     width: 90% !important;
-    margin: 20px auto !important;
+    margin: 20px auto 10px !important;
     border-radius: 10px !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; /* Subtle shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    /* Subtle shadow */
 }
 
+#ZapparSnapshotContainer a {
+    margin: 10px auto !important;
+    border-radius: 10px !important;
+    /* Add border radius */
+    padding: 10px 15px !important;
 
-#zapparSaveButton, #zapparShareButton {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 120px !important;
-    height: 50px !important;
-    margin: 10px !important;
-    border-radius: 8px !important;
-    background-color: #3498db !important; /* Blue button */
+}
+
+#zapparSaveButton,
+#zapparShareButton {
+    width: auto !important;
+    height: auto !important;
+    background-color: #3498db !important;
     color: white !important;
-    transition: background-color 0.3s ease !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-    text-decoration: none !important;
-        
-}
-#ZapparSnapshotContainer a svg {
-  fill:white !important;
-  width: 20px !important;
-  height: 20px !important;
-  margin-right: 5px !important;
-}
-#ZapparSnapshotContainer a text {
-    font-size:0.8em !important;
-    color:white !important;
-}
-#zapparSaveButton:hover, #zapparShareButton:hover {
-    background-color: #2980b9 !important; /* Darker blue */
+    border: none !important;
+    padding: 10px 15px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+
 }
 
+#zapparSaveButton:hover,
+#zapparShareButton:hover {
+    background-color: #2980b9 !important;
+}
+
+#ZapparSnapshotContainer a svg {
+    display: none !important;
+    /*Keep this to hide the svg on save and share buttons*/
+}
+
+#ZapparSnapshotContainer a svg text {
+    display: block !important;
+    font-size: 1em !important;
+    color: white !important;
+}
 
 #zapparInstructionsp {
     color: white !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 10px !important;
     text-align: center !important;
-    font-size:1.1em !important;
-}
-
-@media (max-width: 600px) {
-     #ZapparSaveButton, #zapparShareButton {
-        width: 90px !important;
-    }
-    #ZapparSnapshotContainer a svg {
-        width:15px !important;
-        height:15px !important;
-    }
-    #zapparInstructionsp{
-        font-size:0.9em !important;
-    }
+    font-size: 1.1em !important;
 }
