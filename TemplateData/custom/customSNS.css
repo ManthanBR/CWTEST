@@ -121,12 +121,14 @@
 }
 
 #ZapparPreviewVideo {
-    width: 90% !important;
-   margin: 20px auto 10px !important;
-   border-radius: 10px !important;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-   /* Subtle shadow */
-    aspect-ratio: 16 / 9; /* or the correct video aspect ratio */
+    margin: 20px auto 10px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    aspect-ratio: 16 / 9;
+    max-width: 90vw;  /* Optionally add max-width so it doesn't overflow on very wide screens */
+   max-height: 80vh;
+  min-width: 300px;
+  min-height: 150px;
 }
 
 #ZapparSnapshotContainer a {
