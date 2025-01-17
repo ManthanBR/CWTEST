@@ -287,8 +287,13 @@
 
                   window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
 
-                 
-
+                  //Show record button
+                   var recordButtonContainer = document.getElementById("cameraButtonContainer");
+                   if(recordButtonContainer){
+                        recordButtonContainer.style.display = "block";
+                   } else {
+                       console.error("Could not find cameraButtonContainer to make it visible")
+                   }
                   //replace background transparency
                   const canvas = document.querySelector("#unity-canvas");
                   let bgColor = window.getComputedStyle(canvas).backgroundColor;
