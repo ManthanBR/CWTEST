@@ -122,10 +122,11 @@
 
 #ZapparPreviewVideo {
     width: 90% !important;
-    margin: 20px auto 10px !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-    /* Subtle shadow */
+   margin: 20px auto 10px !important;
+   border-radius: 10px !important;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+   /* Subtle shadow */
+    aspect-ratio: 16 / 9; /* or the correct video aspect ratio */
 }
 
 #ZapparSnapshotContainer a {
