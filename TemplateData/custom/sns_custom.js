@@ -31,7 +31,7 @@ window.addEventListener("load", function () {
         return;
     }
     ZapparVideoRecorder.createCanvasVideoRecorder(canvas, {
-        audio: false,
+        audio: true,
         useSharePrompt: false
     }).then(rec => {
         recorder = rec;
@@ -67,7 +67,7 @@ window.addEventListener("load", function () {
         recorder.onComplete.bind(async (res) => {
            ZapparSharing({
                 data: await res.asDataURL(),
-                fileNamePrepend: 'MyCustomVideo',
+                fileNamePrepend: 'ChineseWokAR',
                 shareTitle: 'Check out my Video',
                 shareText: 'Recorded using FilterYouAR',
               },
@@ -147,6 +147,13 @@ function startRecording() {
          }
         updateProgress();
         recorder.start();
+         // Send Message to Unity to activate a button
+         if (window.unityInstance) {
+            window.unityInstance.SendMessage('ARCamera', 'OnStartRecording');
+            console.log("Sent 'OnStartRecording' message to Unity");
+      }else{
+            console.error("Could not find the Unity Instance to send 'OnStartRecording' message")
+       }
     } else {
         console.error("Recorder not ready yet")
     }
@@ -170,6 +177,16 @@ function stopRecording() {
         }
 
         recorder.stop();
+
+        if (window.unityInstance) {
+            window.unityInstance.SendMessage('ARCamera', 'OnStopRecording');
+           console.log("Sent 'OnStopRecording' message to Unity");
+      }
+      else {
+           console.error("Could not find the Unity Instance to send 'OnStopRecording' message");
+      }
+
+
     } else {
         console.error("Recorder not ready yet")
     }

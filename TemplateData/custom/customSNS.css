@@ -41,7 +41,7 @@
       stroke-width: 5px;
     }
     .progress-ring__bar {
-       stroke: rgba(255, 0, 0, 0.603); /*Green Color for the progress bar*/
+       stroke: rgb(255, 0, 0); /*Green Color for the progress bar*/
        stroke-width: 5px;
         stroke-linecap: round;
          fill:transparent;
@@ -170,26 +170,25 @@
   }
   
   #ZapparSnapshotContainer a text {
-      font-family: 'Roboto', sans-serif !important;
-      font-size: 0.8em !important;
-      fill: white !important;
-      background-color: transparent !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      display: block !important;
-       text-align: center !important;
-        x: 0 !important;
-        y: 50% !important;
-        transform: translateY(-40%) !important;
-      white-space: nowrap !important; /* Prevent text wrapping */
-     max-width: 100% !important; /* make the width use the width available*/
-      overflow: hidden !important; /* hides the extra part of the text*/
-      font-weight: bold !important;
-
-  }
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 0.8em !important;
+    fill: white !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+   text-align: center !important;
+      x: 0 !important;
+    y: 50% !important;
+    transform: translateY(-40%) !important;
+    white-space: nowrap !important;
+   max-width: 100% !important;
+    overflow: hidden !important;
+   font-weight: bold !important;  /* Make the text bold */
+}
 
 #zapparSaveButton:hover, #zapparShareButton:hover {
-    background-color: #2980b9 !important; /* Darker blue on hover */
+    background-color: #d23710 !important; /* Darker blue on hover */
 }
 
 /* Instruction text styles */
