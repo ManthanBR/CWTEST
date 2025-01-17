@@ -1,0 +1,83 @@
+/* Modernized Custom CSS for Zappar Save and Share UI */
+#ZapparSnapshotContainer {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    color: white !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; /* Center items horizontally */
+    justify-content: center !important; /* Center items vertically */
+    font-family: 'Roboto', sans-serif !important; /* Modern font */
+}
+
+
+#zapparCloseAref {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    width: 30px !important;
+    height: 30px !important;
+    cursor: pointer !important;
+}
+
+#zapparCloseAref svg {
+    stroke: white !important;
+}
+
+
+#ZapparPreviewVideo {
+    width: 90% !important;
+    margin: 20px auto !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; /* Subtle shadow */
+}
+
+
+#zapparSaveButton, #zapparShareButton {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 120px !important;
+    height: 50px !important;
+    margin: 10px !important;
+    border-radius: 8px !important;
+    background-color: #3498db !important; /* Blue button */
+    color: white !important;
+    transition: background-color 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    text-decoration: none !important;
+        
+}
+#ZapparSnapshotContainer a svg {
+  fill:white !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 5px !important;
+}
+#ZapparSnapshotContainer a text {
+    font-size:0.8em !important;
+    color:white !important;
+}
+#zapparSaveButton:hover, #zapparShareButton:hover {
+    background-color: #2980b9 !important; /* Darker blue */
+}
+
+
+#zapparInstructionsp {
+    color: white !important;
+    margin-bottom: 20px !important;
+    text-align: center !important;
+    font-size:1.1em !important;
+}
+
+@media (max-width: 600px) {
+     #ZapparSaveButton, #zapparShareButton {
+        width: 90px !important;
+    }
+    #ZapparSnapshotContainer a svg {
+        width:15px !important;
+        height:15px !important;
+    }
+    #zapparInstructionsp{
+        font-size:0.9em !important;
+    }
+}
