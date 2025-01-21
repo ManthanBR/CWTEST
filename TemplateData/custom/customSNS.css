@@ -114,19 +114,38 @@
     overflow: auto !important; /* Allow scrolling */
 }
 
-/* Close button styles */
+/* Enhanced Close Button Styles with Shadow */
 #zapparCloseAref {
     position: absolute !important;
-    top: 10px !important;
-    right: 10px !important;
-    width: 30px !important;
-    height: 30px !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px !important;
+    height: 40px !important;
     cursor: pointer !important;
-    z-index: 10001 !important; /* Ensure it's above the content */
+    z-index: 10001 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important; /* Added shadow transition */
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Added subtle shadow */
+}
+
+#zapparCloseAref:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: rotate(90deg) !important;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important; /* Shadow becomes a bit more prominent on hover */
 }
 
 #zapparCloseAref svg {
-    stroke: white !important;
+    stroke: #fff !important;
+    width: 24px !important;
+    height: 24px !important;
+    transition: stroke 0.2s ease-in-out !important;
+}
+
+#zapparCloseAref:hover svg {
+    stroke: #fff !important;
 }
 
 /* Video preview styles */
@@ -143,19 +162,20 @@
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 160px !important; /* Increased button width */
-    height: 60px !important; /* Increased button height */
+    width: 160px !important;
+    height: 60px !important;
     margin: 10px !important;
-    border-radius: 8px !important;
-    background-color: #d23710 !important; /* Blue button */
-    color: white !important;
-    transition: background-color 0.3s ease !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 12px !important; /* Less rounded corners */
+    background-color: #e74c3c !important;  /* Use a slightly richer red */
+    color: #fff !important; /* White text */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease !important; /* Smooth transition */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important; /* Lighter shadow */
     text-decoration: none !important;
     cursor: pointer !important;
-    font-size: 40px !important; /* Larger font size */
+    font-size: 24px !important; /* More reasonable font size */
+    font-weight: 600 !important; /* Slightly bolder text */
+    font-family: 'Roboto', sans-serif !important; /* Modern font */
 }
-
 
 #ZapparSnapshotContainer a svg {
     width: auto !important;
@@ -184,42 +204,43 @@
     white-space: nowrap !important;
    max-width: 100% !important;
     overflow: hidden !important;
-   font-weight: bold !important;  /* Make the text bold */
+   font-weight: bold !important;
 }
 
 #zapparSaveButton:hover, #zapparShareButton:hover {
-    background-color: #d23710 !important; /* Darker blue on hover */
+    background-color: #c0392b !important; /* Slightly darker hover color */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important; /* Slightly larger shadow */
 }
+
 
 /* Instruction text styles */
 #zapparInstructionsp {
-    color: white !important;
+    color: #e0e0e0 !important; /* Lighter text color */
     margin-bottom: 20px !important;
     text-align: center !important;
-    font-size:1.1em !important;
+    font-size: 1.1em !important;
     max-width: 90% !important;
+    font-family: 'Roboto', sans-serif !important;  /* Modern font */
+    line-height: 1.6 !important;  /* Improved readability */
+    font-weight: 400 !important; /* Regular font weight */
 }
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
     #zapparSaveButton, #zapparShareButton {
-        width: 120px !important; /* Adjusted for smaller screens */
+        width: 120px !important;
         height: 50px !important;
-        font-family: 'Roboto', sans-serif !important; /* Modern font */
-        font-size: 32px !important;
+        font-size: 20px !important; /* Smaller font size */
     }
 
-
-    #ZapparSnapshotContainer a svg {
+     #ZapparSnapshotContainer a svg {
         width:50px !important;
         height:50px !important;
     }
-    #zapparInstructionsp{
-        font-size:0.9em !important;
+    #zapparInstructionsp {
+        font-size: 0.9em !important;
     }
-
     #ZapparPreviewVideo {
          max-width: 100% !important;
     }
-
 }
