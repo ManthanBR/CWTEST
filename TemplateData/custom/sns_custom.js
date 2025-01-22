@@ -23,6 +23,15 @@ function setupEventListeners() {
     }
 }
 
+function sendLoadingCompleteToUnity() {
+    if (window.unityInstance) {
+        window.unityInstance.SendMessage('ARCamera', 'LoadingComplete');
+        console.log("Sent 'LoadingComplete' message to Unity");
+    } else {
+        console.error("Could not find the Unity Instance to send 'LoadingComplete' message");
+    }
+}
+
 window.addEventListener("load", function () {
     console.log("sns_custom.js: Page loaded! Initializing recorder");
     const canvas = document.querySelector("#unity-canvas");
@@ -55,6 +64,8 @@ window.addEventListener("load", function () {
                            recordButtonContainer.style.display = "block";
                          setTimeout(() => {
                              recordButtonContainer.style.opacity = 1;
+                               // Send the loading complete signal
+                             sendLoadingCompleteToUnity();
                          }, 50);
                      }
                  }
@@ -103,36 +114,15 @@ window.addEventListener("load", function () {
                 recordButtonContainer.style.display = "block";
                 setTimeout(() => {
                     recordButtonContainer.style.opacity = 1;
+                    // Send the loading complete signal here as well
+                    sendLoadingCompleteToUnity();
                }, 50);
             }
         });
     }
 });
 
-window.addEventListener("zappar-sns-ready", function () {
-    console.log("Zappar SNS ready event fired!");
-    const targetNode = document.getElementById('ZapparSnapshotContainer');
-    if (!targetNode) {
-        console.error("Zappar Snapshot container not found");
-        return;
-    }
-    const observer = new MutationObserver(function (mutationsList, observer) {
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                console.log("child list mutated, checking for download button");
-                const saveButton = document.getElementById('zapparSaveButton');
-                if (saveButton) {
-                    console.log("Save button found!");
-                    saveButton.removeAttribute('download');
-                    saveButton.setAttribute('download', 'MyCustomVideoName.mp4');
-                    console.log("Save button download attribute set to MyCustomVideoName.mp4");
-                    observer.disconnect();
-                }
-            }
-        }
-    });
-    observer.observe(targetNode, { childList: true, subtree: true });
-});
+
 
 function startRecording() {
     if (recorder) {
@@ -200,18 +190,19 @@ function updateProgress() {
     const percentage = elapsedTime / maxTime;
     if (percentage >= 1) {
         stopRecording();
+        return; //Added return to stop it from running after recording is done.
     }
     else {
         const circle = document.querySelector('.progress-ring__bar');
-          if(circle){
-                  const circumference = circle.getAttribute('r') * 2 * Math.PI;
-                  const offset = circumference * (1 - percentage);
-                 circle.style.strokeDashoffset = offset;
-                  requestAnimationFrame(updateProgress);
-           }
-        else{
-          console.error("Could not find the progress-ring__bar to update progress");
-         }
+        if(circle){
+                const circumference = circle.getAttribute('r') * 2 * Math.PI;
+                const offset = circumference * (1 - percentage);
+                circle.style.strokeDashoffset = offset;
+                requestAnimationFrame(updateProgress);
+        }
+      else{
+        console.error("Could not find the progress-ring__bar to update progress");
+        }
 
     }
 }
