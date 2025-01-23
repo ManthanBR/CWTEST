@@ -4,13 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unity WebGL Player | Chinesewok</title>
+    <title>Unity WebGL Player | sharetest</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="stylesheet" href="TemplateData/custom/customSNS.css">
 
     <style>
       body { font-family: 'Roboto', sans-serif; letter-spacing: 0.05em; font-size: max(2vw, 2vh); color:white}
@@ -22,7 +20,7 @@
   </head>
   <body>
     <!--IMAGETARGETS-->
-    
+
     <video id="webcam-video" muted autoplay playsinline style="width:1px;position:absolute"></video>
     <canvas id="video-canvas" style="width:100%; height:100%; object-fit:cover; position:absolute"></canvas>
     <div id="startARDiv" class="ctaDiv" style="background: #2f2e32">
@@ -32,23 +30,6 @@
       <button id="startARButton" onclick="StartAR()" style="visibility: hidden">ALLOW ACCESS</button>
       <br><br><br>
     </div>
-    <div id="cameraButtonContainer" style="display:none">
-      <button id="recordButton" aria-label="Record"  >
-         <div class="progress-ring">
-            <svg class="progress-ring__circle" width="80" height="80" viewBox="0 0 80 80">
-              <circle class="progress-ring__track" cx="40" cy="40" r="36"></circle>
-              <circle class="progress-ring__bar" cx="40" cy="40" r="36"></circle>
-            </svg>
-             <div class="camera-icon">
-               <div class="red-dot"></div>
-               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                  <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2zm6 8a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                </svg>
-               </div>
-            </div>
-      </button>
-  </div>
     <div id="screenshotDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
         <div style="position:relative; background-color:#2c2b2f; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); border-radius: max(1.5vh, 1.5vw); text-align: center; overflow: hidden"> 
           <img id="screenshotImg" src="" alt="screenshot" style="width:80vw; height:80vh">
@@ -59,23 +40,6 @@
             </svg>
           </button> 
           <p style="font-size: max(1vw, 1vh); color: #fff6" >Press and hold to save or share this screenshot</p>
-          </div>
-    </div>
-      <div id="videoPreviewDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
-        <div style="position:relative; background-color:#2c2b2f; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); border-radius: max(1.5vh, 1.5vw); text-align: center; overflow: hidden">
-              <video id="videoPreview" controls style="width:80vw; height:80vh;"></video>
-                <div style="display:flex; width:100%; align-items: center; justify-content:center;">
-                    <button id="saveVideoButton" onclick="downloadVideo()" style="margin-right:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Save</button>
-                   <button onclick="shareVideo()" style="margin-left:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Share</button>
-             </div>
-             
-          <button onclick="HideVideoPreview()" style="position:absolute;right: max(1vw, 1vh);top: max(1vw, 1vh);background: #3d3d3d77; width: max(4vw, 4vh); height: max(4vw, 4vh);padding: 0;border-radius: 100vw; display: flex;align-items: center;justify-content: center;">
-            <svg width="max(2.5vw,2.5vh)" height="max(2.5vw,2.5vh)" viewBox="0 0 24 24">
-              <line x1="3" y1="3" x2="21" y2="21" stroke="#999" stroke-width="2.5"></line>
-              <line x1="3" y1="21" x2="21" y2="3" stroke="#999" stroke-width="2.5"></line>
-            </svg>
-          </button>
-      
           </div>
     </div>
     <div id="confirmUrlDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
@@ -91,9 +55,8 @@
     <div id="errorDiv" class="ctaDiv" style="visibility: hidden; opacity: 0; background-color:#2c2b2f">
         <p id="errorText" style="text-align: center; width:60vw; color:#7f3f3f; font-size: max(3vw, 3vh);"></p>
     </div>
-    
     <div id="unity-container">
-      <canvas id="unity-canvas" width=540 height=960 tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -104,9 +67,6 @@
     </div>
     <script src="arcamera.js" type="text/javascript"></script>
     <script src="wtracker.js" type="text/javascript"></script>
-    <script src="https://libs.zappar.com/zappar-videorecorder/1.0.1/zappar-videorecorder.js"></script>
-    <script src="https://libs.zappar.com/zappar-sharing/1.1.8/zappar-sharing.min.js"></script>
-    <script src="TemplateData/custom/sns_custom.js"></script>
     <script>
       // Disable double-tap to zoom
       document.addEventListener('touchstart', function (event) {
@@ -200,8 +160,8 @@
           codeUrl: buildUrl + "/CWTEST.wasm",
           streamingAssetsUrl: "StreamingAssets",
           companyName: "DefaultCompany",
-          productName: "Chinesewok",
-          productVersion: "0.1",
+          productName: "sharetest",
+          productVersion: "0.1.0",
           showBanner: unityShowBanner,
         };
 
@@ -229,7 +189,7 @@
             progressBarFull.style.width = 100 * progress + "%";
           }).then((unityInstance) => {
             loadingBar.style.display = "none";
-            window.uarGameInstance=unityInstance;
+            
             window.unityInstance = unityInstance;
             if(!window.camPermissionsGranted) {
               RequestWebcam();
@@ -303,15 +263,9 @@
                   console.log("Webcam started successfully");
 
                   window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
-                 window.unityInstance.SendMessage('ARCamera', 'LoadingComplete');
-                  
-                  //Show record button
-                   var recordButtonContainer = document.getElementById("cameraButtonContainer");
-                   if(recordButtonContainer){
-                        recordButtonContainer.style.display = "block";
-                   } else {
-                       console.error("Could not find cameraButtonContainer to make it visible")
-                   }
+
+                 
+
                   //replace background transparency
                   const canvas = document.querySelector("#unity-canvas");
                   let bgColor = window.getComputedStyle(canvas).backgroundColor;
@@ -527,31 +481,6 @@
             screenshotDiv.style.visibility = 'hidden';
           }, 500);
       }
-      
-      function ShowVideoPreview(videoURL) {
-          var videoPreviewDiv = document.getElementById('videoPreviewDiv');
-          videoPreviewDiv.style.opacity = 1;
-          videoPreviewDiv.style.visibility = 'visible';
-
-          document.getElementById('cameraButtonContainer').style.display = "none";
-
-          const video = document.getElementById('videoPreview');
-           video.src = videoURL;
-           video.style.width = "80vw";
-           video.style.height = 80 / window.innerWidth * window.innerHeight + "vw";
-      }
-
-      function HideVideoPreview(){
-        var videoPreviewDiv = document.getElementById('videoPreviewDiv');
-           videoPreviewDiv.style.opacity = 0;
-           setTimeout(()=>{
-              videoPreviewDiv.style.visibility = 'hidden';
-
-              document.getElementById('cameraButtonContainer').style.display = "block";
-
-
-            }, 500);
-      }
 
       function ShowConfirmUrl(url){
           var confirmUrlDiv = document.getElementById("confirmUrlDiv");
@@ -568,47 +497,7 @@
             confirmUrlDiv.style.visibility = 'hidden';
           }, 500);
       }
-       function downloadVideo() {
-           const video = document.getElementById('videoPreview');
-            const a = document.createElement('a');
-              a.href = video.src;
-            a.download = 'video.webm'; //Set the file extension to webm
-            a.style.display = 'none';
-              document.body.appendChild(a);
-             a.click();
-            document.body.removeChild(a);
 
-         
-
-        }
-
-        async function shareVideo() {
-           try{
-                const video = document.getElementById('videoPreview');
-                const blob = await fetch(video.src).then(r => r.blob());
-                const file = new File([blob], "video.webm", { type: "video/webm" });
-                
-                if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
-                  await navigator.share({
-                      files: [file],
-                      title: 'Video Share',
-                  });
-                } else {
-                    console.log("navigator share not supported")
-                      const shareAPIError = "Sharing is not supported on your device. You can download the video instead"
-                       ShowError(shareAPIError);
-                  }
-             }
-             catch (error) {
-                 const shareAPIError = "There was an error trying to share the video";
-                ShowError(shareAPIError);
-                console.error(shareAPIError, error);
-           }
-
-           
-
-      }
-   
     </script>
   </body>
 </html>

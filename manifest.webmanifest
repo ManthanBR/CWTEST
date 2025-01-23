@@ -1,6 +1,6 @@
 {
-    "name": "Chinesewok",
-    "short_name": "Chinesewok",
+    "name": "sharetest",
+    "short_name": "sharetest",
     "start_url": "index.html",
     "display": "fullscreen",
     "background_color": "#231F20",
