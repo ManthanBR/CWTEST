@@ -61,6 +61,23 @@
           <p style="font-size: max(1vw, 1vh); color: #fff6" >Press and hold to save or share this screenshot</p>
           </div>
     </div>
+      <div id="videoPreviewDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
+        <div style="position:relative; background-color:#2c2b2f; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); border-radius: max(1.5vh, 1.5vw); text-align: center; overflow: hidden">
+              <video id="videoPreview" controls style="width:80vw; height:80vh;"></video>
+                <div style="display:flex; width:100%; align-items: center; justify-content:center;">
+                    <button id="saveVideoButton" onclick="downloadVideo()" style="margin-right:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Save</button>
+                   <button onclick="shareVideo()" style="margin-left:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Share</button>
+             </div>
+             
+          <button onclick="HideVideoPreview()" style="position:absolute;right: max(1vw, 1vh);top: max(1vw, 1vh);background: #3d3d3d77; width: max(4vw, 4vh); height: max(4vw, 4vh);padding: 0;border-radius: 100vw; display: flex;align-items: center;justify-content: center;">
+            <svg width="max(2.5vw,2.5vh)" height="max(2.5vw,2.5vh)" viewBox="0 0 24 24">
+              <line x1="3" y1="3" x2="21" y2="21" stroke="#999" stroke-width="2.5"></line>
+              <line x1="3" y1="21" x2="21" y2="3" stroke="#999" stroke-width="2.5"></line>
+            </svg>
+          </button>
+      
+          </div>
+    </div>
     <div id="confirmUrlDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
         <div style="position:relative; background-color:#2c2b2f; padding:10px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); width: min(80vw,80vh); display:flex; flex-direction: column; align-items: center; border-radius: 1.5vh;
 ">
@@ -286,7 +303,8 @@
                   console.log("Webcam started successfully");
 
                   window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
-
+                 window.unityInstance.SendMessage('ARCamera', 'LoadingComplete');
+                  
                   //Show record button
                    var recordButtonContainer = document.getElementById("cameraButtonContainer");
                    if(recordButtonContainer){
@@ -509,6 +527,25 @@
             screenshotDiv.style.visibility = 'hidden';
           }, 500);
       }
+      
+      function ShowVideoPreview(videoURL) {
+          var videoPreviewDiv = document.getElementById('videoPreviewDiv');
+          videoPreviewDiv.style.opacity = 1;
+          videoPreviewDiv.style.visibility = 'visible';
+
+          const video = document.getElementById('videoPreview');
+           video.src = videoURL;
+           video.style.width = "80vw";
+           video.style.height = 80 / window.innerWidth * window.innerHeight + "vw";
+      }
+
+      function HideVideoPreview(){
+        var videoPreviewDiv = document.getElementById('videoPreviewDiv');
+           videoPreviewDiv.style.opacity = 0;
+           setTimeout(()=>{
+              videoPreviewDiv.style.visibility = 'hidden';
+            }, 500);
+      }
 
       function ShowConfirmUrl(url){
           var confirmUrlDiv = document.getElementById("confirmUrlDiv");
@@ -525,7 +562,45 @@
             confirmUrlDiv.style.visibility = 'hidden';
           }, 500);
       }
+      function downloadVideo() {
+           
+           if (window.unityInstance) {
+              window.unityInstance.SendMessage('ARCamera', 'OnDownloadVideoButtonPressed');
+              console.log("Sent 'OnDownloadVideoButtonPressed' message to Unity");
+               HideVideoPreview();
+          }
+          else {
+               console.error("Could not find the Unity Instance to send 'OnDownloadVideoButtonPressed' message");
+         }
+   }
 
+        async function shareVideo() {
+           try{
+                const video = document.getElementById('videoPreview');
+                const blob = await fetch(video.src).then(r => r.blob());
+                const file = new File([blob], "video.webm", { type: "video/webm" });
+                
+                if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
+                  await navigator.share({
+                      files: [file],
+                      title: 'Video Share',
+                  });
+                } else {
+                    console.log("navigator share not supported")
+                      const shareAPIError = "Sharing is not supported on your device. You can download the video instead"
+                       ShowError(shareAPIError);
+                  }
+             }
+             catch (error) {
+                 const shareAPIError = "There was an error trying to share the video";
+                ShowError(shareAPIError);
+                console.error(shareAPIError, error);
+           }
+
+           
+
+      }
+   
     </script>
   </body>
 </html>
