@@ -2,7 +2,7 @@ let unityReady = false;
 let startARButtonListenerAdded = false;
 let recording = false;
 let startTime;
-const maxRecordingTime = 60; // Set your desired max recording time in seconds
+const maxRecordingTime = 59; // Set your desired max recording time in seconds
 
 console.log("sns_custom.js: Script start");
 
