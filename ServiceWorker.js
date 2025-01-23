@@ -1,4 +1,4 @@
-const cacheName = "DefaultCompany-sharetest-0.1.0";
+const cacheName = "DefaultCompany-Chinesewok-0.1";
 const contentToCache = [
     "Build/CWTEST.loader.js",
     "Build/CWTEST.framework.js",
