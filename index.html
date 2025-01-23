@@ -532,7 +532,7 @@
           var videoPreviewDiv = document.getElementById('videoPreviewDiv');
           videoPreviewDiv.style.opacity = 1;
           videoPreviewDiv.style.visibility = 'visible';
-          //Hide the recording button
+
           document.getElementById('cameraButtonContainer').style.display = "none";
 
           const video = document.getElementById('videoPreview');
@@ -546,8 +546,9 @@
            videoPreviewDiv.style.opacity = 0;
            setTimeout(()=>{
               videoPreviewDiv.style.visibility = 'hidden';
-            //show the record button
-             document.getElementById('cameraButtonContainer').style.display = "block";
+
+              document.getElementById('cameraButtonContainer').style.display = "block";
+
 
             }, 500);
       }
@@ -567,23 +568,25 @@
             confirmUrlDiv.style.visibility = 'hidden';
           }, 500);
       }
-      function downloadVideo() {
-           
-           if (window.unityInstance) {
-              window.unityInstance.SendMessage('ARCamera', 'OnDownloadVideoButtonPressed');
-              console.log("Sent 'OnDownloadVideoButtonPressed' message to Unity");
-               HideVideoPreview();
-          }
-          else {
-               console.error("Could not find the Unity Instance to send 'OnDownloadVideoButtonPressed' message");
-         }
-   }
+       function downloadVideo() {
+           const video = document.getElementById('videoPreview');
+            const a = document.createElement('a');
+              a.href = video.src;
+            a.download = 'video.webm'; //Set the file extension to webm
+            a.style.display = 'none';
+              document.body.appendChild(a);
+             a.click();
+            document.body.removeChild(a);
+
+         
+
+        }
 
         async function shareVideo() {
            try{
                 const video = document.getElementById('videoPreview');
                 const blob = await fetch(video.src).then(r => r.blob());
-                const file = new File([blob], "video.mp4", { type: "video/mp4" });
+                const file = new File([blob], "video.webm", { type: "video/webm" });
                 
                 if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
                   await navigator.share({
