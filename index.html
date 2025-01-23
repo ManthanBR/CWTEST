@@ -61,23 +61,23 @@
           <p style="font-size: max(1vw, 1vh); color: #fff6" >Press and hold to save or share this screenshot</p>
           </div>
     </div>
-      <div id="videoPreviewDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
-        <div style="position:relative; background-color:#2c2b2f; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); border-radius: max(1.5vh, 1.5vw); text-align: center; overflow: hidden">
-              <video id="videoPreview" controls style="width:80vw; height:80vh;"></video>
-                <div style="display:flex; width:100%; align-items: center; justify-content:center;">
-                    <button id="saveVideoButton" onclick="downloadVideo()" style="margin-right:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Save</button>
-                   <button onclick="shareVideo()" style="margin-left:5px; background: #2085ff; color: white; height: max(4vw, 4vh); font-size: max(1.5vw, 1.5vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh);">Share</button>
-             </div>
-             
-          <button onclick="HideVideoPreview()" style="position:absolute;right: max(1vw, 1vh);top: max(1vw, 1vh);background: #3d3d3d77; width: max(4vw, 4vh); height: max(4vw, 4vh);padding: 0;border-radius: 100vw; display: flex;align-items: center;justify-content: center;">
-            <svg width="max(2.5vw,2.5vh)" height="max(2.5vw,2.5vh)" viewBox="0 0 24 24">
-              <line x1="3" y1="3" x2="21" y2="21" stroke="#999" stroke-width="2.5"></line>
-              <line x1="3" y1="21" x2="21" y2="3" stroke="#999" stroke-width="2.5"></line>
-            </svg>
-          </button>
-      
-          </div>
-    </div>
+    <div id="videoPreviewDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
+      <div style="position:relative; background-color:#2c2b2f00; box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 12px 30px 0 rgba(0, 0, 0, 0.3); border-radius: max(2vh, 2vw); text-align: center; overflow: hidden; ">
+            <video id="videoPreview" controls style="width:80vw; height:80vh; border-radius: max(1vh, 1vw) max(1vh, 1vw) 0 0;"></video>
+              <div style="display:flex; width:100%; align-items: center; justify-content:center; padding: 10px;">
+                  <button id="saveVideoButton" onclick="downloadVideo()" style="margin-right:5px; background: linear-gradient(145deg, #2a75c9, #255ea9); color: white; height: max(4.5vw, 4.5vh); font-size: max(1.6vw, 1.6vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh); border-radius: max(1.2vw, 1.2vh); font-weight:500; transition: 0.2s; user-select:none; -webkit-user-select:none;-moz-user-select:none; -ms-user-select:none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); letter-spacing: 0.05em; border: 0; text-transform:uppercase;">Save</button>
+                 <button onclick="shareVideo()" style="margin-left:5px; background: linear-gradient(145deg, #2a75c9, #255ea9); color: white; height: max(4.5vw, 4.5vh); font-size: max(1.6vw, 1.6vh); padding-left: max(2vw, 2vh); padding-right: max(2vw, 2vh); border-radius: max(1.2vw, 1.2vh); font-weight:500; transition: 0.2s;user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); letter-spacing: 0.05em; border: 0; text-transform:uppercase;">Share</button>
+           </div>
+           
+        <button onclick="HideVideoPreview()" style="position:absolute;right: max(1vw, 1vh);top: max(1vw, 1vh);background: #3d3d3d77; width: max(4vw, 4vh); height: max(4vw, 4vh);padding: 0;border-radius: 100vw; display: flex;align-items: center;justify-content: center; transition: 0.2s; border: 0;">
+          <svg width="max(2.5vw,2.5vh)" height="max(2.5vw,2.5vh)" viewBox="0 0 24 24">
+            <line x1="3" y1="3" x2="21" y2="21" stroke="#aaa" stroke-width="2.5"></line>
+            <line x1="3" y1="21" x2="21" y2="3" stroke="#aaa" stroke-width="2.5"></line>
+          </svg>
+        </button>
+    
+        </div>
+  </div>
     <div id="confirmUrlDiv" style="visibility: hidden; opacity: 0;" class="ctaDiv">
         <div style="position:relative; background-color:#2c2b2f; padding:10px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.25); width: min(80vw,80vh); display:flex; flex-direction: column; align-items: center; border-radius: 1.5vh;
 ">
