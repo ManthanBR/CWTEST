@@ -532,6 +532,8 @@
           var videoPreviewDiv = document.getElementById('videoPreviewDiv');
           videoPreviewDiv.style.opacity = 1;
           videoPreviewDiv.style.visibility = 'visible';
+          //Hide the recording button
+          document.getElementById('cameraButtonContainer').style.display = "none";
 
           const video = document.getElementById('videoPreview');
            video.src = videoURL;
@@ -544,6 +546,9 @@
            videoPreviewDiv.style.opacity = 0;
            setTimeout(()=>{
               videoPreviewDiv.style.visibility = 'hidden';
+            //show the record button
+             document.getElementById('cameraButtonContainer').style.display = "block";
+
             }, 500);
       }
 
